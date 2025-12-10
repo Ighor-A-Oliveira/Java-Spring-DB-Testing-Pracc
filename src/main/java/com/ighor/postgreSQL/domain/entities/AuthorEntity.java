@@ -1,4 +1,4 @@
-package com.ighor.postgreSQL.domain;
+package com.ighor.postgreSQL.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +15,7 @@ import lombok.*;
 //Since this is a high level abstraction we are gonna map each table to an entity
 @Table(name = "authors")
 //@EqualsAndHashCode(onlyExplicitlyIncluded = true) // 👈 important
-public class Author {
+public class AuthorEntity {
 
 
     //@EqualsAndHashCode.Include // 👈 equality based only on id

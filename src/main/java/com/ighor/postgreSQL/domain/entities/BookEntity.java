@@ -1,4 +1,4 @@
-package com.ighor.postgreSQL.domain;
+package com.ighor.postgreSQL.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 //Since this is a high level abstraction we are gonna map each table to an entity
 @Table(name = "books")
-public class Book {
+public class BookEntity {
 
     @Id
     private String isbn;
@@ -26,5 +26,5 @@ public class Book {
 
     @ManyToOne(cascade = CascadeType.ALL) //CascadeType.ALL = When you do something to this entity, JPA will ALSO automatically perform the same operation on the associated entity.
     @JoinColumn(name = "author_id")
-    private Author author;
+    private AuthorEntity authorEntity;
 }

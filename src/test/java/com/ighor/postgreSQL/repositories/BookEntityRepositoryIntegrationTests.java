@@ -2,8 +2,8 @@
 package com.ighor.postgreSQL.repositories;
 
 import com.ighor.postgreSQL.TestDataUtil;
-import com.ighor.postgreSQL.domain.Author;
-import com.ighor.postgreSQL.domain.Book;
+import com.ighor.postgreSQL.domain.entities.AuthorEntity;
+import com.ighor.postgreSQL.domain.entities.BookEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class BookRepositoryIntegrationTests {
+public class BookEntityRepositoryIntegrationTests {
 
     private BookRepository underTest;
     private AuthorRepository authorRepository;
 
     @Autowired
-    public BookRepositoryIntegrationTests(BookRepository underTest, AuthorRepository authorRepository) {
+    public BookEntityRepositoryIntegrationTests(BookRepository underTest, AuthorRepository authorRepository) {
         this.underTest = underTest;
         this.authorRepository = authorRepository;
     }
@@ -33,22 +33,22 @@ public class BookRepositoryIntegrationTests {
     @Test
     public void testThatBookCanBeCreatedAndRecalled() {
         //Create author
-        Author author = TestDataUtil.createTestAuthorA();
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
         //Save author in order fo the id to be create then we save a reference
         //If we dont save the author for the id to be created then we break the flow of the test
-        Author saved =  authorRepository.save(author);
+        AuthorEntity saved =  authorRepository.save(authorEntity);
         //We use that reference to create the book
-        Book book = TestDataUtil.createTestBookA(saved);
+        BookEntity bookEntity = TestDataUtil.createTestBookA(saved);
         //Here we save the book
-        underTest.save(book);
+        underTest.save(bookEntity);
         //Then we try to find it by using the id
-        Optional<Book> result = underTest.findById(book.getIsbn());
+        Optional<BookEntity> result = underTest.findById(bookEntity.getIsbn());
         //Then we test it
         assertThat(result).isPresent();
-        assertThat(result.get()).isEqualTo(book);
-        assertThat(result.get().getIsbn()).isEqualTo(book.getIsbn());
-        assertThat(result.get().getTitle()).isEqualTo(book.getTitle());
-        assertThat(result.get().getAuthor()).isEqualTo(book.getAuthor());
+        assertThat(result.get()).isEqualTo(bookEntity);
+        assertThat(result.get().getIsbn()).isEqualTo(bookEntity.getIsbn());
+        assertThat(result.get().getTitle()).isEqualTo(bookEntity.getTitle());
+        assertThat(result.get().getAuthorEntity()).isEqualTo(bookEntity.getAuthorEntity());
 
     }
 
@@ -56,15 +56,15 @@ public class BookRepositoryIntegrationTests {
     @Test
     public void testThatMultipleBooksCanBeCreatedAndRecalled(){
         //Created the authors so we have the FKs
-        Author author = TestDataUtil.createTestAuthorA();
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
 
         //Inserted Author in DB
-        authorRepository.save(author);
+        authorRepository.save(authorEntity);
 
         //Created the books and passed the author so the method can add the FK
-        Book bookA = TestDataUtil.createTestBookA(author);
-        Book bookB = TestDataUtil.createTestBookB(author);
-        Book bookC = TestDataUtil.createTestBookC(author);
+        BookEntity bookEntityA = TestDataUtil.createTestBookA(authorEntity);
+        BookEntity bookEntityB = TestDataUtil.createTestBookB(authorEntity);
+        BookEntity bookEntityC = TestDataUtil.createTestBookC(authorEntity);
 
         //Added the Fks
 //        bookA.setAuthorId(author.getId());
@@ -72,69 +72,69 @@ public class BookRepositoryIntegrationTests {
 //        bookC.setAuthorId(author.getId());
 
         //Inserted Books in DB
-        underTest.save(bookA);
-        underTest.save(bookB);
-        underTest.save(bookC);
+        underTest.save(bookEntityA);
+        underTest.save(bookEntityB);
+        underTest.save(bookEntityC);
 
         //Started Find method
-        Iterable<Book> result = underTest.findAll();
+        Iterable<BookEntity> result = underTest.findAll();
 
         //Testing
         assertThat(result).hasSize(3);
-        assertThat(result).containsExactly(bookA, bookB, bookC);
+        assertThat(result).containsExactly(bookEntityA, bookEntityB, bookEntityC);
     }
 
     @Test
     public void testThatBooksCanBeUpdated(){
         //Since book is dependent on author_id as FK we need to create it first
-        Author author = TestDataUtil.createTestAuthorA();
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
         //Save author in the db
-        authorRepository.save(author);
+        authorRepository.save(authorEntity);
 
         //Created book
-        Book bookA = TestDataUtil.createTestBookA(author);
+        BookEntity bookEntityA = TestDataUtil.createTestBookA(authorEntity);
 
             //JPA sets the FK for us, so we dont need this line anymore
             //bookA.setAuthorId(author.getId());
-        underTest.save(bookA);
+        underTest.save(bookEntityA);
 
         //Updated the title in the system
-        bookA.setTitle("UPDATED");
+        bookEntityA.setTitle("UPDATED");
 
         //Commited the update in the db
-        underTest.save(bookA);
+        underTest.save(bookEntityA);
 
         //Searched for the updated book
-        Optional<Book> result = underTest.findById(bookA.getIsbn());
+        Optional<BookEntity> result = underTest.findById(bookEntityA.getIsbn());
         //Then we test it
         assertThat(result).isPresent();
-        assertThat(result.get()).isEqualTo(bookA);
-        assertThat(result.get().getIsbn()).isEqualTo(bookA.getIsbn());
+        assertThat(result.get()).isEqualTo(bookEntityA);
+        assertThat(result.get().getIsbn()).isEqualTo(bookEntityA.getIsbn());
         assertThat(result.get().getTitle()).isEqualTo("UPDATED");
-        assertThat(result.get().getAuthor()).isEqualTo(author);
+        assertThat(result.get().getAuthorEntity()).isEqualTo(authorEntity);
 
     }
 
     @Test
     public void testThatBooksCanBeDeleted(){
         //Since book is dependent on author_id as FK we need to create it first
-        Author author = TestDataUtil.createTestAuthorA();
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
         //Save it to the db
-        authorRepository.save(author);
+        authorRepository.save(authorEntity);
 
         //Created book
-        Book bookA = TestDataUtil.createTestBookA(author);
+        BookEntity bookEntityA = TestDataUtil.createTestBookA(authorEntity);
 
             //JPA sets the FK for us, so we dont need this line anymore
             //bookA.setAuthorId(author.getId());
-        underTest.save(bookA);
+        underTest.save(bookEntityA);
 
 
         //Commited the update in the db
-        underTest.deleteById(bookA.getIsbn());
+        underTest.deleteById(bookEntityA.getIsbn());
 
         //Searched for the updated book
-        Optional<Book> result = underTest.findById(bookA.getIsbn());
+        Optional<BookEntity> result = underTest.findById(bookEntityA.getIsbn());
         assertThat(result).isEmpty();
 
     }

@@ -31,3 +31,18 @@ public class PostgreSqlApplication /*implements CommandLineRunner*/ {
     }*/
 
 }
+
+//Proccess
+//Client sends AuthorDto to your API, since we only expose data via DTO
+//
+//Controller uses mapper to convert DTO → Entity.
+//
+//Controller calls service to persist entity.
+//
+//Service calls repository to save entity in DB.
+//
+//Service returns saved entity to controller.
+//
+//Controller uses mapper to convert Entity → DTO.
+//
+//Controller returns DTO to client.
